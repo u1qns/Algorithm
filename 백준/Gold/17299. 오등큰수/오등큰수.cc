@@ -12,7 +12,7 @@ int main()
 	vector<int> arr(N + 1);
 	vector<int> ngf(N + 1, -1);
 	vector<int> F(MAX, 0);
-	stack<int> st;
+	stack<int> stk;
 
 	for (int i=0; i<N; ++i)
 	{
@@ -22,12 +22,19 @@ int main()
 
 	for (int i=0; i<N; ++i)
 	{
-		while (!st.empty() && F[arr[st.top()]]< F[arr[i]])
+		int now = arr[i];
+
+		while (!stk.empty())
 		{
-			ngf[st.top()] = arr[i];
-			st.pop();
+			int idx = stk.top();
+			int top = arr[idx];
+
+			if(F[top] >=  F[now]) break;
+
+			ngf[idx] = arr[i];
+			stk.pop();
 		}
-		st.push(i);
+		stk.push(i);
 	}
 
 	for (int i=0; i<N; ++i)
