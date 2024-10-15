@@ -9,7 +9,7 @@ bool visited[MAX_N] = {false, };
 int dp[MAX_N][2] = {false, };
 vector<int> adj[MAX_N];
 
-void dfs(const int idx)
+void dfs(const int idx, const int parent)
 {
     dp[idx][0] = 0; // 일반인이니까 0 
     dp[idx][1] = 1; // 내가 얼리어답터니까 1부터 시작
@@ -17,11 +17,11 @@ void dfs(const int idx)
     for(int i=0; i<adj[idx].size(); ++i)
     {
         int tmp = adj[idx][i];
-        if(visited[tmp]) continue;
+        if(parent == tmp) continue;
         
         visited[idx] = true;
         
-        dfs(tmp);
+        dfs(tmp, idx);
         dp[idx][0] += dp[tmp][1]; // 내가 일반인이라면 내 부모라도 얼리어 답터여야 함
         dp[idx][1] += min(dp[tmp][0], dp[tmp][1]); // 내가 얼리어답터라면 둘 중 고를 수 있음
     }
@@ -42,7 +42,7 @@ int main()
     }
     
     int start = 1; // 임의의정점
-    dfs(start);
+    dfs(start, -1);
     cout << min(dp[start][0], dp[start][1]);
     return 0;
 }
