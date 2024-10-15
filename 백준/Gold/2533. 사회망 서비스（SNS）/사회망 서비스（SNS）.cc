@@ -29,6 +29,9 @@ void dfs(const int idx)
 
 int main()
 {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+    
     int N, u, v;
     cin >> N;
     for(int i=1; i<N; ++i)
