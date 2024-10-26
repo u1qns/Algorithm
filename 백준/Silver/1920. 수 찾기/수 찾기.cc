@@ -1,28 +1,53 @@
 #include <iostream>
-#include <map>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-int main() 
+int N, M;
+vector<int> arr;
+
+bool binarySearch(const int target)
 {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    int left = 0;
+    int right = N-1;
     
-    // 이분 탐색인거 아는데 트라이
-    map<int, int> map;
-    int n, m, inp; 
+    while(left <= right)
+    {
+        int mid = (right + left) / 2;
+        
+        if(arr[mid] == target) 
+            return true;
+
+        if(arr[mid] > target) 
+            right = mid-1;
+        else 
+            left = mid+1;
+    }
+
+    return false;
+}
+
+int main()
+{
+    // 시간 초과 (4%)라서 넣음 
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int inp;
     
-    cin>>n;
-    for(int i=0; i<n; ++i)
+    cin >> N;
+    arr.resize(N);
+
+    for(int i=0; i<N; ++i) 
+        cin >> arr[i];
+    sort(arr.begin(), arr.end());
+    
+    cin >> M;
+    for(int i=0; i<M; ++i)
     {
         cin >> inp;
-        map[inp]++;
+        cout << binarySearch(inp) << "\n";
     }
     
-    cin >> m;
-    for(int i=0; i<m; ++i)
-    {
-        cin >> inp;
-        cout << (map.find(inp) == map.end() ? 0 : 1) << "\n";
-    }
     return 0;
 }
