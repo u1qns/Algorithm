@@ -17,17 +17,17 @@ public class Main {
         return -1;
     }
 
-    static int solve(final String inp) {
+    static int findShortcut(final String inp) {
         String[] words = inp.toLowerCase().split(" ");
 
         // 먼저 모든 단어의 첫글자를 본다.
-        int tmp = 0;
+        int offset = 0;
         for(final String word : words) {
             int idx = findShortcut(word, 0);
             if(idx != -1) {
-                return idx + tmp;
+                return idx + offset;
             }
-            tmp += word.length() + 1;
+            offset += word.length() + 1;
         }
 
         // 왼쪽부터 단어의 문자열 탐색
@@ -41,16 +41,18 @@ public class Main {
 
         while(N -- > 0) {
             String inp = br.readLine();
-            int shortcut = solve(inp);
-            if(shortcut != -1) {
+            int shortcut = findShortcut(inp);
+            if (shortcut == -1)
+                sb.append(inp).append("\n");
+            else {
                 sb.append(inp.substring(0, shortcut))
                         .append("[").append(inp.charAt(shortcut)).append("]");
-                if(shortcut+1 < inp.length()) {
+
+                if (shortcut + 1 < inp.length())
                     sb.append(inp.substring(shortcut + 1));
-                }
-            } else
-                sb.append(inp);
-            sb.append("\n");
+
+                sb.append("\n");
+            }
         }
 
         System.out.print(sb);
