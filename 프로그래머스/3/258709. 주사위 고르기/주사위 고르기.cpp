@@ -1,15 +1,14 @@
-#include <string>
 #include <vector>
-#include <iostream>
 #include <algorithm>
-#include <memory.h>
-
+#include <unordered_set>
 using namespace std;
 constexpr int MAX_N = 10;
 
 int N, maxWin = 0;
 vector<int> winner;
-bool visited[MAX_N] = {false, };
+unordered_set<int> visited;
+int picked = 0b0;
+
 
 void roll(const int depth, const int sum,
           const vector<int>& dice, vector<int>& result,
@@ -28,14 +27,28 @@ void roll(const int depth, const int sum,
     }
 }
 
+bool getAnswer(const vector<int>& dice, const int winCnt)
+{
+    if(maxWin < winCnt)
+    {
+        maxWin = winCnt;
+        winner = dice;
+        return true;
+    }
+    return false;
+}
+
 void play(const vector<vector<int>>& input)
 {
+    visited.insert(picked);
+    int unmask = (1 << N) - 1;
+    visited.insert(picked ^ unmask);
+
     // A, B 주사위 정의
     vector<int> A, B;
-    int szA = 0, szB = 0;
     for(int i=0; i<N; ++i)
     {
-        if(visited[i])
+        if(picked & (1 << i))
             A.push_back(i);
         else
             B.push_back(i);
@@ -56,37 +69,38 @@ void play(const vector<vector<int>>& input)
 
     // fight() : 지금 주사위 A, B 이렇게 골라놓으면 A가 win 만큼 이기는구나!
     int win = 0;
+    int lose = 0;
     for(int i=0; i<sumA.size(); ++i)
     {
         for(int j=0; j<sumB.size(); ++j)
         {
-            //cout << "*" <<  sumA[i] << "\t" << sumB[j] << "\n";
             if(sumA[i] > sumB[j]) ++win;
+            else if(sumA[i] < sumB[j]) ++lose;
         }
     }
-
-    // check()
-    if(maxWin < win)
-    {
-        maxWin = win;
-        winner = A;
-    }
+    
+    if(win > lose)
+        getAnswer(A, win);
+    else
+        getAnswer(B, lose);
 
 }
+
 
 void pickDices(const int cnt, const int idx, const vector<vector<int>>& input)
 {
     if(cnt == 0)
     {
-        play(input);
+        if(visited.find(picked) == visited.end())
+            play(input);
         return;
     }
 
     for(int i=idx; i<N; ++i)
     {
-        visited[i] = true;
+        picked |= (1 << i);
         pickDices(cnt-1, i+1, input);
-        visited[i] = false;
+        picked &= ~(1 << i);
     }
 }
 
@@ -105,39 +119,3 @@ vector<int> solution(vector<vector<int>> dice) {
     }
     return answer;
 }
-
-// int main()
-// {
-//     std::vector<std::vector<std::vector<int>>> allData = {
-//             {
-//                     {1, 2, 3, 4, 5, 6},
-//                     {3, 3, 3, 3, 4, 4},
-//                     {1, 3, 3, 4, 4, 4},
-//                     {1, 1, 4, 4, 5, 5}
-//             },
-//             {
-//                     {1, 2, 3, 4, 5, 6},
-//                     {2, 2, 4, 4, 6, 6}
-//             },
-//             {
-//                     {40, 41, 42, 43, 44, 45},
-//                     {43, 43, 42, 42, 41, 41},
-//                     {1, 1, 80, 80, 80, 80},
-//                     {70, 70, 1, 1, 70, 70}
-//             }
-//     };
-
-//     for(const auto& input : allData)
-//     {
-//         //init
-//         maxWin = 0;
-//         memset(visited, false, sizeof(visited));
-//         winner.clear();
-
-//         auto answer = solution(input);
-//         for (const auto &i: answer)
-//             cout << i << ", ";
-//         cout <<"\n--------------- \n";
-//     }
-//     return 0;
-// }
