@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <sstream>
 
 using namespace std;
@@ -10,7 +10,7 @@ typedef std::string VT;
 constexpr int MAX_N =  50 + 1;
 constexpr int MAX_IDX = MAX_N * MAX_N;
 vector<VT> result;
-unordered_map<int, VT> indexMapper;
+map<int, VT> indexMapper;
 
 // UF
 vector<int> parent;
@@ -20,14 +20,6 @@ int find(const int x)
     return parent[x] = find(parent[x]);
 }
 
-void updateTree(const int before, const int after)
-{
-    for(int i=0; i<parent.size(); ++i)
-    {
-        if(find(i) == before)
-            parent[i] = after;
-    }
-}
 bool merge(const int a, const int b)
 {
     int r1 = find(a);
@@ -35,6 +27,8 @@ bool merge(const int a, const int b)
 
     if(r1 == r2) return false;
 
+    // 두 셀 중 한 셀이 값을 가지고 있을 경우 병합된 셀은 그 값을 가지게 됩니다.
+    // 두 셀 모두 값을 가지고 있을 경우 병합된 셀은 (r1, c1) 위치의 셀 값을 가지게 됩니다.
     VT v1 = indexMapper[r1];
     VT v2 = indexMapper[r2];
 
@@ -46,19 +40,25 @@ bool merge(const int a, const int b)
     else if(v1.empty() && !v2.empty())
         value = v2;
 
-    if(parent[r1] < parent[r2])
+    if(parent[r1] < parent[r1])
     {
         parent[r2] += parent[r1];
         parent[r1] = r2;
-        updateTree(r1, r2);
-        indexMapper[r2] = value;
+
+        if(value.empty())
+            indexMapper[r2].clear();
+        else
+            indexMapper[r2] = value;
+
     }
     else
     {
         parent[r1] += parent[r2];
         parent[r2] = r1;
-        updateTree(r2, r1);
-        indexMapper[r1] = value;
+        if(value.empty())
+            indexMapper[r1].clear();
+        else
+            indexMapper[r1] = value;
     }
 
     return true;
@@ -70,7 +70,7 @@ void init()
 {
     result.clear();
     indexMapper.clear();
-    parent.assign(MAX_IDX, -1);
+    parent.resize(MAX_IDX, -1);
 }
 
 int getIndex(const int r, const int c)
@@ -113,10 +113,9 @@ void unmerge(const int r, const int c)
     // 자식 정리
     for(int i=0; i<MAX_IDX; ++i)
     {
-        int r = find(i);
-        if(r == root)
+        if(find(i) == root) // NOTE: 그냥 인덱스 말고 얘네의 부모를 다 찾아가야하는구나..
         {
-            parent[i] =  -1; // 초기화
+            parent[i] = -1; // 초기화
             indexMapper[i].clear();
         }
     }
