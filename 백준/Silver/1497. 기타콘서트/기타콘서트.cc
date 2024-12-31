@@ -19,11 +19,7 @@ void dfs(const int depth, const int cnt, const long long mask)
     }
 
     if(depth == N)
-    {
         return;
-    }
-
-    //cout << guitars[depth] << " : " << (mask | guitars[depth]) << "\n";
 
     dfs(depth+1, cnt+1, (mask | guitars[depth]));
     dfs(depth+1, cnt, mask);
@@ -44,7 +40,7 @@ int main()
         for(int j=0; j<M; ++j)
         {
             if(inp[j] == 'Y')
-                mask|= (1LL << (M-1-j)); // LL을 추가
+                mask|= (1LL << (M-1-j)); // LL는 있어야 한다..
         }
         guitars[i] = mask;
     }
@@ -52,7 +48,6 @@ int main()
     dfs(0, 0, 0);
 
     cout << (answer == 0 ? -1 : answer);
-
 
     return 0;
 }
