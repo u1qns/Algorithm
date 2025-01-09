@@ -24,7 +24,7 @@ int main()
         int cnt = 0;
         for(int j=0; j<N; ++j)
         {
-            for (int i = 0; i < N-1; ++i)
+            for (int i = 0; i < N-j-1; ++i)
             {
                 if (inp[i] > inp[i+1])
                 {
