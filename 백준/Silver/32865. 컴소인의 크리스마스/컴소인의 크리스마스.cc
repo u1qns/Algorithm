@@ -6,33 +6,37 @@
 using namespace std;
 typedef pair<int, int> pii;
 
-vector<int> solve(int n, deque<int>& ready, deque<pii>& pending)
+int N;
+deque<int> pass;
+
+vector<int> solve(deque<pii>&& wait)
 {
     vector<int> result;
 
-    for (int t = 1; t < 2 * n; ++t)
+    for (int i = 1; i < 2 * N; ++i)
     {
-        if (t % 2 == 1)
+
+        if (i % 2 == 1)
         {
-            if (ready.empty())
+            if(pass.empty())
                 return {-1};
 
-            result.push_back(ready.front());
-            ready.pop_front();
+            result.push_back(pass.front());
+            pass.pop_front();
         }
         else
         {
-            if (pending.empty())
+            if (wait.empty())
                 return {-1};
 
-            auto& cur = pending.front();
-            result.push_back(cur.first);
-            cur.second--;
+            auto& now = wait.front();
+            result.push_back(now.first);
+            now.second--;
 
-            if (cur.second == 0)
+            if (now.second == 0)
             {
-                ready.push_back(cur.first);
-                pending.pop_front();
+                pass.push_back(now.first);
+                wait.pop_front();
             }
         }
     }
@@ -42,37 +46,31 @@ vector<int> solve(int n, deque<int>& ready, deque<pii>& pending)
 
 int main()
 {
-    int N, S;
-    deque<int> right;
-    vector<pii> wrong;
-
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(false);
+ 
+    int S;
+    vector<pii> fail;
 
     cin >> N;
     for (int i = 1; i <= N; ++i)
     {
         cin >> S;
         if (S == 0)
-            right.push_back(i);
+            pass.push_back(i);
         else
-            wrong.push_back({i, S});
+            fail.push_back({i, S});
     }
 
-    sort(wrong.begin(), wrong.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+    std::sort(fail.begin(), fail.end(), [](const pii& a, const pii& b) {
         return a.second < b.second;
     });
 
-    deque<pair<int, int>> tmp(wrong.begin(), wrong.end());
+    vector<int> answer = solve(deque<pii>(make_move_iterator(fail.begin()), make_move_iterator(fail.end())));
 
-    vector<int> result = solve(N, right, tmp);
-    if (result.size() == 1 && result[0] == -1)
-    {
-        cout << -1 << "\n";
-    }
-    else
-    {
-        for (int x : result)
-            cout << x << "\n";
-    }
+    for (const int ans : answer)
+        cout << ans << "\n";
 
     return 0;
 }
