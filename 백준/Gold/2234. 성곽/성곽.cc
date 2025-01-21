@@ -1,5 +1,4 @@
 #include <iostream>
-#include <bitset>
 #include <algorithm>
 #include <queue>
 using namespace std;
@@ -9,11 +8,10 @@ constexpr int MAX_N  = 50 + 1;
 // 서북동남
 constexpr int dx[4] = {0, -1, 0, 1};
 constexpr int dy[4] = {-1, 0, 1, 0};
-// 2234 성곽 4시 진짜 시작 ㅠ
 
 int N, M;
 int maxRoomSize = 0;
-std::bitset<4> grid[MAX_N][MAX_N];
+int grid[MAX_N][MAX_N] = {0, };
 int roomIndex[MAX_N][MAX_N] = {0, };
 
 bool isValid(const int x, const int y)
@@ -41,8 +39,9 @@ vector<pii> solve(const int r, const int c, const int idx)
         auto front = q.front(); q.pop();
         for(int d=0; d<4; ++d)
         {
-            bool isWall = grid[front.first][front.second][d];
-            if(isWall) continue;
+            bool isWall = grid[front.first][front.second] & (1 << d);
+            if(isWall)
+                continue;
 
             // 2진수였을 때 d 자리 수가 1이면 벽이 있어서 못감
             int x = front.first + dx[d];
@@ -96,8 +95,7 @@ int main()
     {
         for(int j=0; j<M; ++j)
         {
-            int inp; cin >> inp;
-            grid[i][j] = inp;
+            cin >> grid[i][j];
         }
     }
 
@@ -105,9 +103,11 @@ int main()
     {
         for(int j=0; j<M; ++j)
         {
-            if(roomIndex[i][j]) continue;
+            if(roomIndex[i][j])
+                continue;
 
             auto room = solve(i, j, totalRoom.size() + 1);
+            
             totalRoom.push_back(room);
             if(room.size() > maxRoomSize)
                 maxRoomSize = room.size();
