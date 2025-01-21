@@ -255,7 +255,6 @@ vector<int> getScore(const int color)
     {
         if(!isFull(len, color)) continue;
 
-        removeLine(len, color);
         result.push_back(len);
     }
 
