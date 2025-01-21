@@ -1,50 +1,18 @@
 #include <iostream>
-#include <queue>
-#include <deque>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
-typedef pair<int, int> pii;
 
-int N = 0; // 블럭 놓는 순서
-int score = 0;
+int T, score = 0;
 
 int blue[4][6] = {0, };
 int green[6][4] = {0, };
-
-enum {
+enum
+{
     RED,
     BLUE,
     GREEN,
 };
-
-void showBlue()
-{
-    cout << "BLUE ----------------------\n";
-    for(int i=0; i<4; ++i)
-    {
-        for(int j=0; j<6; ++j)
-        {
-            cout << blue[i][j] << " ";
-        }
-        cout << "\n";
-    }
-}
-
-void showGreen()
-{
-    cout << "GREEN ----------------------\n";
-
-    for(int i=0; i<6; ++i)
-    {
-        for(int j=0; j<4; ++j)
-        {
-            cout << green[i][j] << " ";
-        }
-        cout << "\n";
-    }
-}
 
 void gravityBlock(const int t, const int x, const int y, const int cnt)
 {
@@ -128,8 +96,6 @@ void gravityBlock(const int t, const int x, const int y, const int cnt)
 
 }
 
-
-
 void removeBottom(const int color, const int cnt)
 {
     if(cnt == 0)
@@ -203,24 +169,6 @@ bool isFull(const int len, const int color)
     return true;
 }
 
-void removeLine(const int len, const int color)
-{
-    if(color == BLUE)
-    {
-        for(int i=0; i<4; ++i)
-        {
-            blue[i][len] = 0;
-        }
-    }
-    else if(color == GREEN)
-    {
-        for(int j=0; j<4; ++j)
-        {
-            green[len][j] = 0;
-        }
-    }
-}
-
 void pull(const int len, const int color)
 {
     if(color == BLUE)
@@ -261,7 +209,6 @@ vector<int> getScore(const int color)
     return result;
 }
 
-
 int getLightLine(const int color)
 {
     int cnt = 0;
@@ -275,24 +222,24 @@ int getLightLine(const int color)
     return cnt;
 }
 
-void play(const int t, const int x, const int y)
+void play(const int t, const int x, const int y, const int order)
 {
-    gravityBlock(t, x, y, ++N);
+    gravityBlock(t, x, y, order);
 
     // BLUE ----------
     auto result = getScore(BLUE);
-    score += result.size();
     for(const auto& line : result)
         pull(line, BLUE);
     removeBottom(BLUE, getLightLine(BLUE));
+    score += result.size();
 
     // GREEN ----------
     result = getScore(GREEN);
-    score += result.size();
     for(const auto& line : result)
         pull(line, GREEN);
-
     removeBottom(GREEN, getLightLine(GREEN));
+    score += result.size();
+
 }
 
 int getAnswer()
@@ -313,12 +260,12 @@ int getAnswer()
 
 int main()
 {
-    int T, t, x, y;
+    int t, x, y;
     cin >> T;
-    while(T--)
+    for(int i=1; i<=T; ++i)
     {
         cin >> t >> x >> y;
-        play(t, x, y);
+        play(t, x, y, i);
     }
 
     cout << score << "\n" << getAnswer();
