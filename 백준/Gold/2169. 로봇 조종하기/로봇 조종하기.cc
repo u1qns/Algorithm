@@ -1,44 +1,10 @@
 #include <iostream>
-#include <algorithm>
 using namespace std;
 
 constexpr int MAX_N = 1000 + 1;
-constexpr int DIR_SIZE = 3;
-constexpr int dx[DIR_SIZE] = { 1, 0, 0};
-constexpr int dy[DIR_SIZE] = { 0, -1, 1};
-constexpr int INF = 1e9;
 
-int N, M, grid[MAX_N][MAX_N], dp[MAX_N][MAX_N][DIR_SIZE] = {0, };
-bool visited[MAX_N][MAX_N] = {false, };
-
-bool isValid(const int x, const int y)
-{
-    if(x<0 || y<0 || x>=N || y>=M)
-        return false;
-    return true;
-}
-
-int solve(const int x, const int y, const int dir)
-{
-    if(x==N-1 && y==M-1) return grid[x][y]; // 더 이상 진행할 수 없기 때문에 아래 로직 타지 않음
-    if(dp[x][y][dir] != -INF) return dp[x][y][dir]; // 이미 최적이기 때문에 연산하지 않아도 됨
-
-    // 현재 위치에서 갈 수 있는 곳으로 1칸 전진한 값을 찾음
-    for(int d=0; d<DIR_SIZE; ++d)
-    {
-        int nx = x + dx[d];
-        int ny = y + dy[d];
-
-        if(!isValid(nx, ny) || visited[nx][ny]) continue;
-
-        visited[nx][ny] = true;
-        // 현재 위치의 최대 가중치와 다음으로 이동했을 때의 값을 찾아 갱신
-        dp[x][y][dir] = std::max(dp[x][y][dir], solve(nx, ny, d) + grid[x][y]);
-        visited[nx][ny] = false;
-    }
-
-    return dp[x][y][dir];
-}
+int N, M, grid[MAX_N][MAX_N];
+int dp[3][MAX_N][MAX_N]; // 진짜 dp, ->, <-
 
 int main()
 {
@@ -48,13 +14,41 @@ int main()
         for(int j=0; j<M; ++j)
         {
             cin >> grid[i][j];
-
-            dp[i][j][0] = dp[i][j][1] = dp[i][j][2] = -INF; // 최대 합을 구해야하니까 최소로 설정
         }
     };
 
-    visited[0][0] = true; // 시작점 재방문 방지
-    cout << solve(0, 0, 0);
-    
+    //  첫행을 -> 로 진행하면서 누적합
+    dp[0][0][0] = grid[0][0];
+    for(int i=1; i<M; ++i)
+    {
+        dp[0][0][i] = dp[0][0][i-1] + grid[0][i];
+    }
+
+    // (N, M)으로 가기 위해 위에서 부터 아래로 내려가가ㅔㅆ음
+    for(int i=1; i<N; ++i)
+    {
+        // -> 로 가면서 왼쪽이랑 위에꺼랑 비교
+        dp[1][i][0] = dp[0][i-1][0] + grid[i][0];
+        for(int j=1; j<M; ++j)
+        {
+            dp[1][i][j] = std::max(dp[1][i][j-1], dp[0][i-1][j]) + grid[i][j];
+        }
+
+        // <-로 가면서 오른쪽이랑 위랑 비교
+        // 맨 오른쪽에 있는건 위에 있는 값을 그대로 가져오면 됨
+        dp[2][i][M-1] = dp[0][i-1][M-1] + grid[i][M-1];
+        for(int j=M-2; j>=0; --j)
+        {
+            dp[2][i][j] = std::max(dp[2][i][j+1], dp[0][i-1][j]) + grid[i][j];
+        }
+
+        for(int j=0; j<M; ++j)
+        {
+            dp[0][i][j] = std::max(dp[1][i][j], dp[2][i][j]);
+        }
+    }
+
+    cout << dp[0][N-1][M-1];
+
     return 0;
 }
