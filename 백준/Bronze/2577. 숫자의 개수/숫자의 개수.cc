@@ -9,16 +9,15 @@ int main()
     cin >> A >> B >> C;
     long long tmp = A*B;
     tmp *= C;
-    
-    string str = to_string(tmp);
-    for(int i=0; i<str.size(); ++i)
-    {
-        if(str[i] == '0')
-            answer[0]++;
-        else
-            answer[str[i]-'0']++;
-    }
-    
+    // 1234 -> tmp / 10 = 123... -> tmp%10 = 4..
+    while(tmp !=0)
+	{
+   		int q = tmp/10;
+   		int r = tmp%10;
+   		answer[r]++;
+   		tmp = q;
+	} 
+	
     for(int i=0; i<10; ++i)
     {
         cout << answer[i] << "\n";
