@@ -8,23 +8,21 @@ bool answer = false;
 vector<vector<int>> list;
 bool visited[2001] = {false, };
 
-void dfs(int depth, int idx)
+bool dfs(int depth, int idx)
 {
     if(depth == 4)
     {
-        answer = true;
-        return;
+        return true;
     }
 
     for(const int i : list[idx])
     {
         if(visited[i]) continue;
         visited[i] = true;
-        dfs(depth + 1, i);
-        if(answer) return;
+        if(dfs(depth + 1, i)) return true;
         visited[i] = false;
     }
-
+    return false; // 까먹어서 추가
 }
 bool solve()
 {
@@ -32,8 +30,7 @@ bool solve()
     {
         memset(visited, false, sizeof(visited));
         visited[i] = true;
-        dfs(0, i);
-        if(answer) return true;
+        if(dfs(0, i)) return true;
     }
     return false;
 }
