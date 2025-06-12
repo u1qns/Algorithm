@@ -1,6 +1,15 @@
 #include <iostream>
 using namespace std;
 int dp[15][15] = {0, };
+int K, N;
+int solve(const int f, const int r)
+{
+    if(dp[f][r] != 0) return dp[f][r];
+    if(f == 0) return r;
+    if(r == 0) return 0;
+
+    return dp[f][r] = solve(f-1, r) + solve(f, r-1);
+}
 
 int main()
 {
@@ -12,17 +21,7 @@ int main()
         int K, N;
         cin >> K >> N;
 
-        for(int i=1; i<=N; ++i)
-            dp[0][i] = i;
-
-        for(int i=1; i<=K; ++i)
-        {
-            for(int j=1; j<=N; ++j)
-            {
-                dp[i][j] = dp[i-1][j] + dp[i][j-1];
-            }
-        }
-        cout << dp[K][N] << "\n";
+        cout << solve(K, N) << "\n";
     }
 
     return 0;
