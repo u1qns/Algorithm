@@ -1,33 +1,28 @@
 #include <iostream>
-
 using namespace std;
-
 int dp[15][15] = {0, };
 
 int main()
 {
-    int T, k, n;
-
-
-    for(int j=1; j<15; ++j)
-        dp[0][j] = j;
-
-    for(int i=1; i<15; ++i)
-    {
-        for(int k=1; k<15; ++k)
-        {
-            for (int j = 1; j <= k; ++j) {
-                dp[i][k] += dp[i - 1][j];
-            }
-        }
-    }
-
-
+    int T;
     cin >> T;
+
     while(T--)
     {
-        cin >> k >> n;
-        cout << dp[k][n] << "\n";
+        int K, N;
+        cin >> K >> N;
+
+        for(int i=1; i<=N; ++i)
+            dp[0][i] = i;
+
+        for(int i=1; i<=K; ++i)
+        {
+            for(int j=1; j<=N; ++j)
+            {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        cout << dp[K][N] << "\n";
     }
 
     return 0;
