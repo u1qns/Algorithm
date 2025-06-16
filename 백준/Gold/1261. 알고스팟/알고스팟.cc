@@ -50,26 +50,16 @@ int solve()
 
             if(!isValid(nx, ny)) continue;
             
-            if(grid[nx][ny])
+            int next_cost = (grid[nx][ny] ? k + 1 : k);
+
+            if(visited[nx][ny] > next_cost)
             {
-                int next_cost = k + 1;
-                if(visited[nx][ny] > next_cost)
-                {
-                    visited[nx][ny] = next_cost;
-                    pq.push({nx, ny, next_cost});
-                }
-            }
-            else
-            {
-                int next_cost = k;
-                if(visited[nx][ny] > next_cost)
-                {
-                    visited[nx][ny] = next_cost;
-                    pq.push({nx, ny, next_cost});
-                }
+                visited[nx][ny] = next_cost;
+                pq.push({nx, ny, next_cost});
             }
         }
     }
+    
     return visited[N-1][M-1];
 }
 
