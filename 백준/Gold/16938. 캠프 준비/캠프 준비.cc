@@ -4,7 +4,7 @@ using namespace std;
 
 int N, L, R, X;
 int answer = 0;
-int A[1000001];
+int A[16];
 
 void solve(int cnt, int idx, int sum, int easy, int hard)
 {
