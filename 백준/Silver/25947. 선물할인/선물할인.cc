@@ -1,57 +1,43 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
+using namespace std;
 
-std::vector<int> p;
-int n, b, a;
-
-
-int solve()
+int  main()
 {
-    int start = 0, end = 0; // end가 answer
-    long long sum = 0;
-    
-    // a개 만큼 할인 받기
-    for(; end<a; ++end)
-    {
-        sum += (p[end]/2);
-        
-        // a개만큼 할인받아도 예산 넘으면 출력 후 종료
-        if(sum > b)
-        {
-            return end;
-        }
-    }
-    
-    for(; end<n; ++end)
-    {
-        // 예산을 안 넘으면 포인터로 사용하는 start는 반값 할인됐던거 다시 원가로 사고
-        // 다음 선물 end번째를 반값으로 구매 -> 할인 최대 개수 a개 유지
-        sum = sum + p[start]/2;
-        sum = sum + p[end]/2;
-        ++start;
-        
-        if(sum > b) // 예산 넘으면 종료
-        {
-            return end;
-        }
-    }
-    
-    return end;
-}
+    int N, A, B;
 
-int main()
-{
-    std::cin >> n >> b >> a;
-    
-    p.resize(n);
+    cin >> N >> B >> A;
 
-    for(int i=0; i<n; ++i)
-        std::cin >> p[i];
-    
-    std::sort(p.begin(), p.end());
-    
-    std::cout << solve();
+    vector<int> costs(N, 0);
+    int cost = 0;
+
+    for(int i=0; i<N; ++i) {
+        cin >> costs[i];
+    }
+
+    sort(costs.begin(), costs.end());
+
+    int left = 0, right = 0;
+
+    // 먼저 반값으로 물건 구매
+    while(right<A && cost<B) {
+        cost += (costs[right++] / 2);
+    }
+
+    if(cost > B) {
+        cout << right-1;
+        return 0;
+    }
+
+    //  현재 A 물건까지 반값으로 샀고 예산 남았음
+    while(right<N && cost<B) {
+        cost += (costs[right++]/2); //비싼걸 싸게 사야하고
+        cost += (costs[left++]/2); // 싼걸 정가로 사야함
+    }
+
+    if(cost > B) right--;
+    cout << right;
 
     return 0;
 }
